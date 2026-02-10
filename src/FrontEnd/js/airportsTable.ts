@@ -1,7 +1,8 @@
-'use strict';
 // js/airportsTable.js
+
 const DATA_URL = 'http://127.0.0.1:3000/JSONs/airports.json';
 const DATA_URL_2 = 'http://127.0.0.1:3000/JSONs/airplanes.json';
+
 // Columns to display in the table
 const AIRPORT_COLS = [
 	'icao_code',
@@ -10,6 +11,7 @@ const AIRPORT_COLS = [
 	'longitude_deg',
 	'runways',
 ];
+
 const AIRPLANE_COLS = [
 	'name',
 	'fuel_capacity_gal',
@@ -18,9 +20,12 @@ const AIRPLANE_COLS = [
 	'max_seats',
 	'current_seats',
 ];
-async function fetchData(URL, HEADER_COLS) {
+
+
+async function fetchData(URL: string, HEADER_COLS : Array<string>) {
 	try {
 		const response = await fetch(URL);
+
 		if (!response.ok) {
 			throw new Error('Error fetching data');
 		}
@@ -31,51 +36,44 @@ async function fetchData(URL, HEADER_COLS) {
 		console.log(error);
 	}
 }
-function generateTable(data, HEADER_COLS, container_class) {
-	var _a, _b;
+
+function generateTable(data : object, HEADER_COLS : Array<string>, container_class : string) {
 	var table = document.createElement('table');
-	(_b =
-		(_a = document.querySelector(`.${container_class}`)) === null ||
-		_a === void 0
-			? void 0
-			: _a.appendChild(table)) !== null && _b !== void 0
-		? _b
-		: 'Failed to add table';
+	document.querySelector(`.${container_class}`)?.appendChild(table) ?? "Failed to add table";
+
 	var headerRow = document.createElement('tr');
+
 	HEADER_COLS.forEach(colName => {
 		const th = document.createElement('th');
 		th.textContent = colName;
 		headerRow.appendChild(th);
 	});
+
 	table.appendChild(headerRow);
+
 	Object.values(data).forEach(element => {
 		const tr = document.createElement('tr');
+
 		HEADER_COLS.forEach(col => {
-			var _a, _b;
-			const td = document.createElement('td');
+			const td : HTMLTableCellElement = document.createElement('td');
+
 			if (Array.isArray(element[col])) {
-				td.textContent =
-					(_a = element[col].length.toString()) !== null && _a !== void 0
-						? _a
-						: '';
+				td.textContent = element[col].length.toString() ?? '';
 			} else {
-				td.textContent =
-					(_b = element[col]) !== null && _b !== void 0 ? _b : '';
+				td.textContent = element[col] ?? '';
 			}
 			tr.appendChild(td);
 		});
 		table.appendChild(tr);
 	});
 }
-const removeLoadingElement = id => {
-	var _a;
-	(_a = document.getElementById(id)) === null || _a === void 0
-		? void 0
-		: _a.remove();
+const removeLoadingElement = (id: string) => {
+	document.getElementById(id)?.remove();
 };
 fetchData(DATA_URL, AIRPORT_COLS).finally(() => {
 	removeLoadingElement('airports--loading');
 });
 fetchData(DATA_URL_2, AIRPLANE_COLS).finally(() => {
-	removeLoadingElement('airplanes--loading');
-});
+    removeLoadingElement('airplanes--loading')
+}
+);

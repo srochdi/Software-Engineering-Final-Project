@@ -1,105 +1,73 @@
-// js/airportsTable.js
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const DATA_URL = 'http://127.0.0.1:3000/JSONs/airports.json';
 const DATA_URL_2 = 'http://127.0.0.1:3000/JSONs/airplanes.json';
-
-// Columns to display in the table
 const AIRPORT_COLS = [
-	'icao_code',
-	'is_hub',
-	'latitude_deg',
-	'longitude_deg',
-	'runways',
+    'icao_code',
+    'is_hub',
+    'latitude_deg',
+    'longitude_deg',
+    'runways',
 ];
-
 const AIRPLANE_COLS = [
-	'name',
-	'fuel_capacity_gal',
-	'max_speed_kt',
-	'fuel_burn_rate_gal_hr',
-	'max_seats',
-	'current_seats',
+    'name',
+    'fuel_capacity_gal',
+    'max_speed_kt',
+    'fuel_burn_rate_gal_hr',
+    'max_seats',
+    'current_seats',
 ];
-
-// var mypromise = new Promise((resolve, reject) => {
-// 	// networking logic
-// 	var data = false;
-
-// 	if (data) {
-// 		resolve(data);
-// 	} else {
-// 		reject('Error 💥💥💥');
-// 	}
-// });
-
-// mypromise.then(val => {
-// 	console.log(val);
-// });
-
-// mypromise.catch(error => {
-// 	console.log(`ERORR ${error}`);
-// });
-
-// fetch(DATA_URL)
-// 	.then(HTTPResponse => {
-// 		if (!HTTPResponse.ok) throw new Error('Error fetching data');
-// 		HTTPResponse.json().then(data => console.log(data));
-// 	})
-// 	.catch(error => {
-// 		console.log(error);
-// 	});
-
 async function fetchData(URL, HEADER_COLS) {
-	try {
-		const response = await fetch(URL);
-
-		if (!response.ok) {
-			throw new Error('Error fetching data');
-		}
-		const data = await response.json();
-		generateTable(data, HEADER_COLS, 'table--container');
-		// console.log(data);
-	} catch (error) {
-		console.log(error);
-	}
+    try {
+        const response = await fetch(URL);
+        if (!response.ok) {
+            throw new Error('Error fetching data');
+        }
+        const data = await response.json();
+        generateTable(data, HEADER_COLS, 'table--container');
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
-
 function generateTable(data, HEADER_COLS, container_class) {
-	var table = document.createElement('table');
-	document.querySelector(`.${container_class}`).appendChild(table);
-
-	var headerRow = document.createElement('tr');
-
-	HEADER_COLS.forEach(colName => {
-		const th = document.createElement('th');
-		th.textContent = colName;
-		headerRow.appendChild(th);
-	});
-
-	table.appendChild(headerRow);
-
-	Object.values(data).forEach(element => {
-		const tr = document.createElement('tr');
-
-		HEADER_COLS.forEach(col => {
-			const td = document.createElement('td');
-
-			if (Array.isArray(element[col])) {
-				td.textContent = element[col].length ?? '';
-			} else {
-				td.textContent = element[col] ?? '';
-			}
-			tr.appendChild(td);
-		});
-		table.appendChild(tr);
-	});
+    const table = document.createElement('table');
+    const container = document.querySelector(`.${container_class}`);
+    if (!container)
+        return;
+    container.appendChild(table);
+    const headerRow = document.createElement('tr');
+    HEADER_COLS.forEach((colName) => {
+        const th = document.createElement('th');
+        th.textContent = colName;
+        headerRow.appendChild(th);
+    });
+    table.appendChild(headerRow);
+    Object.values(data).forEach((element) => {
+        const tr = document.createElement('tr');
+        HEADER_COLS.forEach((col) => {
+            const td = document.createElement('td');
+            const value = element[col];
+            if (Array.isArray(value)) {
+                td.textContent = String(value.length);
+            }
+            else {
+                td.textContent = String(value ?? '');
+            }
+            tr.appendChild(td);
+        });
+        table.appendChild(tr);
+    });
 }
-const removeLoadingElement = id => {
-	document.getElementById(id).remove();
+const removeLoadingElement = (id) => {
+    const el = document.getElementById(id);
+    if (el)
+        el.remove();
 };
 fetchData(DATA_URL, AIRPORT_COLS).finally(() => {
-	removeLoadingElement('airports--loading');
+    removeLoadingElement('airports--loading');
 });
-fetchData(DATA_URL_2, AIRPLANE_COLS).finally(
-	removeLoadingElement('airplanes--loading'),
-);
+fetchData(DATA_URL_2, AIRPLANE_COLS).finally(() => {
+    removeLoadingElement('airplanes--loading');
+});
+//# sourceMappingURL=airportsTable.js.map

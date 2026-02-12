@@ -1,7 +1,10 @@
+// js/airportsTable.js
+
 const DATA_URL = 'http://127.0.0.1:3000/JSONs/airports.json';
 const DATA_URL_2 = 'http://127.0.0.1:3000/JSONs/airplanes.json';
 
-const AIRPORT_COLS: string[] = [
+// Columns to display in the table
+const AIRPORT_COLS = [
 	'icao_code',
 	'is_hub',
 	'latitude_deg',
@@ -9,7 +12,7 @@ const AIRPORT_COLS: string[] = [
 	'runways',
 ];
 
-const AIRPLANE_COLS: string[] = [
+const AIRPLANE_COLS = [
 	'name',
 	'fuel_capacity_gal',
 	'max_speed_kt',
@@ -18,38 +21,29 @@ const AIRPLANE_COLS: string[] = [
 	'current_seats',
 ];
 
-async function fetchData(URL: string, HEADER_COLS: string[]): Promise<void> {
+
+async function fetchData(URL: string, HEADER_COLS : Array<string>) {
 	try {
 		const response = await fetch(URL);
 
 		if (!response.ok) {
 			throw new Error('Error fetching data');
 		}
-
-		const data: Record<string, any> = await response.json();
+		const data = await response.json();
 		generateTable(data, HEADER_COLS, 'table--container');
-
+		// console.log(data);
 	} catch (error) {
 		console.log(error);
 	}
 }
 
-function generateTable(
-	data: Record<string, any>,
-	HEADER_COLS: string[],
-	container_class: string
-): void {
+function generateTable(data : object, HEADER_COLS : Array<string>, container_class : string) {
+	var table = document.createElement('table');
+	document.querySelector(`.${container_class}`)?.appendChild(table) ?? "Failed to add table";
 
-	const table = document.createElement('table');
+	var headerRow = document.createElement('tr');
 
-	const container = document.querySelector(`.${container_class}`);
-	if (!container) return;
-
-	container.appendChild(table);
-
-	const headerRow = document.createElement('tr');
-
-	HEADER_COLS.forEach((colName: string) => {
+	HEADER_COLS.forEach(colName => {
 		const th = document.createElement('th');
 		th.textContent = colName;
 		headerRow.appendChild(th);
@@ -57,37 +51,29 @@ function generateTable(
 
 	table.appendChild(headerRow);
 
-	Object.values(data).forEach((element: any) => {
+	Object.values(data).forEach(element => {
 		const tr = document.createElement('tr');
 
-		HEADER_COLS.forEach((col: string) => {
-			const td = document.createElement('td');
+		HEADER_COLS.forEach(col => {
+			const td : HTMLTableCellElement = document.createElement('td');
 
-			const value = element[col];
-
-			if (Array.isArray(value)) {
-				td.textContent = String(value.length);
+			if (Array.isArray(element[col])) {
+				td.textContent = element[col].length.toString() ?? '';
 			} else {
-				td.textContent = String(value ?? '');
+				td.textContent = element[col] ?? '';
 			}
-
 			tr.appendChild(td);
 		});
-
 		table.appendChild(tr);
 	});
 }
-
-const removeLoadingElement = (id: string): void => {
-	const el = document.getElementById(id);
-	if (el) el.remove();
+const removeLoadingElement = (id: string) => {
+	document.getElementById(id)?.remove();
 };
-
 fetchData(DATA_URL, AIRPORT_COLS).finally(() => {
 	removeLoadingElement('airports--loading');
 });
-
 fetchData(DATA_URL_2, AIRPLANE_COLS).finally(() => {
-	removeLoadingElement('airplanes--loading');
-});
-
+    removeLoadingElement('airplanes--loading')
+}
+);

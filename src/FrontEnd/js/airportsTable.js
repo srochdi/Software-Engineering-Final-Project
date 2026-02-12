@@ -1,7 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+'use strict';
+// js/airportsTable.js
 const DATA_URL = 'http://127.0.0.1:3000/JSONs/airports.json';
 const DATA_URL_2 = 'http://127.0.0.1:3000/JSONs/airplanes.json';
+// Columns to display in the table
 const AIRPORT_COLS = [
     'icao_code',
     'is_hub',
@@ -18,56 +19,63 @@ const AIRPLANE_COLS = [
     'current_seats',
 ];
 async function fetchData(URL, HEADER_COLS) {
-    try {
-        const response = await fetch(URL);
-        if (!response.ok) {
-            throw new Error('Error fetching data');
-        }
-        const data = await response.json();
-        generateTable(data, HEADER_COLS, 'table--container');
-    }
-    catch (error) {
-        console.log(error);
-    }
+	try {
+		const response = await fetch(URL);
+		if (!response.ok) {
+			throw new Error('Error fetching data');
+		}
+		const data = await response.json();
+		generateTable(data, HEADER_COLS, 'table--container');
+		// console.log(data);
+	} catch (error) {
+		console.log(error);
+	}
 }
 function generateTable(data, HEADER_COLS, container_class) {
-    const table = document.createElement('table');
-    const container = document.querySelector(`.${container_class}`);
-    if (!container)
-        return;
-    container.appendChild(table);
-    const headerRow = document.createElement('tr');
-    HEADER_COLS.forEach((colName) => {
-        const th = document.createElement('th');
-        th.textContent = colName;
-        headerRow.appendChild(th);
-    });
-    table.appendChild(headerRow);
-    Object.values(data).forEach((element) => {
-        const tr = document.createElement('tr');
-        HEADER_COLS.forEach((col) => {
-            const td = document.createElement('td');
-            const value = element[col];
-            if (Array.isArray(value)) {
-                td.textContent = String(value.length);
-            }
-            else {
-                td.textContent = String(value ?? '');
-            }
-            tr.appendChild(td);
-        });
-        table.appendChild(tr);
-    });
+	var _a, _b;
+	var table = document.createElement('table');
+	(_b =
+		(_a = document.querySelector(`.${container_class}`)) === null ||
+		_a === void 0
+			? void 0
+			: _a.appendChild(table)) !== null && _b !== void 0
+		? _b
+		: 'Failed to add table';
+	var headerRow = document.createElement('tr');
+	HEADER_COLS.forEach(colName => {
+		const th = document.createElement('th');
+		th.textContent = colName;
+		headerRow.appendChild(th);
+	});
+	table.appendChild(headerRow);
+	Object.values(data).forEach(element => {
+		const tr = document.createElement('tr');
+		HEADER_COLS.forEach(col => {
+			var _a, _b;
+			const td = document.createElement('td');
+			if (Array.isArray(element[col])) {
+				td.textContent =
+					(_a = element[col].length.toString()) !== null && _a !== void 0
+						? _a
+						: '';
+			} else {
+				td.textContent =
+					(_b = element[col]) !== null && _b !== void 0 ? _b : '';
+			}
+			tr.appendChild(td);
+		});
+		table.appendChild(tr);
+	});
 }
-const removeLoadingElement = (id) => {
-    const el = document.getElementById(id);
-    if (el)
-        el.remove();
+const removeLoadingElement = id => {
+	var _a;
+	(_a = document.getElementById(id)) === null || _a === void 0
+		? void 0
+		: _a.remove();
 };
 fetchData(DATA_URL, AIRPORT_COLS).finally(() => {
     removeLoadingElement('airports--loading');
 });
 fetchData(DATA_URL_2, AIRPLANE_COLS).finally(() => {
-    removeLoadingElement('airplanes--loading');
+	removeLoadingElement('airplanes--loading');
 });
-//# sourceMappingURL=airportsTable.js.map
